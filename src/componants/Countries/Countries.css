@@ -1,0 +1,56 @@
+/* .Countriesdiv {
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+    padding-top: 50px;
+    
+}
+form {
+    display: flex;
+    justify-content: space-around;
+
+ }
+.mb-3.row {
+    display: flex;
+    flex-direction: column;
+}
+.title{
+    font-size: large;
+    font-family: var(--bs-body-font-family);
+    font-weight: bold;
+} 
+.countrydiv{
+    width: 1500px;
+} */
+
+
+/* CountriesForm.css */
+
+/* .countries-form {
+    margin: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+   */
+
+/* .CountriesForm {
+    display: flex;
+    flex-direction: row;
+} */
+.form {
+  width: 100%;
+}

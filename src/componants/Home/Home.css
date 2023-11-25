@@ -1,0 +1,9 @@
+.title {
+    font-size: large;
+    font-family: var(--bs-body-font-family);
+    font-weight: bold;
+    color: black;
+}
+main {
+    padding: 20px;
+}

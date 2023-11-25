@@ -1,0 +1,18 @@
+.Footer {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    justify-content: space-around;
+    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgb(97, 97, 97) 0%, rgb(255, 255, 255) 100%);
+    display: flex;
+    align-items: center;
+
+    color: rgb(173, 173, 192);
+  
+}
+
+p {
+    font-family: auto;
+    color: white;
+}
