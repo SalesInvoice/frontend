@@ -7,7 +7,7 @@
     background: radial-gradient(circle, rgb(45, 67, 86) 0%, rgba(10, 19, 52) 100%);
 }
 
-.header1{
+.header1 {
     display: flex;
     flex-direction: row;
     gap: 30px;
@@ -20,7 +20,7 @@ a:hover {
     color: hwb(0 4% 96%);
 }
 
-.logabout{
+.logabout {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -31,10 +31,10 @@ a:hover {
 .navpage {
 
     padding: 0 15px;
-  
+
 }
 
-.weblogo{
+.weblogo {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -44,7 +44,7 @@ a:hover {
     padding-top: 1%;
 }
 
-.logotext{
+.logotext {
     color: thistle;
     font-size: 30px;
 }
@@ -53,7 +53,8 @@ a:hover {
 
 a {
     color: white;
-    font-family: 'Merienda', cursive;    font-size: 20px;
+    font-family: 'Merienda', cursive;
+    font-size: 20px;
     text-decoration: double;
 
 }

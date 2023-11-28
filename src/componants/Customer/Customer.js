@@ -10,7 +10,8 @@ import Table from 'react-bootstrap/Table';
 import { InputGroup } from 'react-bootstrap';
 import { getStoredCountryInfo } from '../Countries/Countries';
 import { getStoredCityInfo } from '../Cities/Cities';
-import Items from '../Items/Items';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export const getStoredCustomerInfo = () => {
     const storedCustomerInfo = JSON.parse(localStorage.getItem('customerInfo')) || [];
@@ -18,25 +19,16 @@ export const getStoredCustomerInfo = () => {
 
     return { customerInfo: Array.isArray(storedCustomerInfo) ? storedCustomerInfo : [], error: storedError };
 };
-function Customer() {
-    // Use the utility function to get stored data
-    
-    const { countryInfo, error } = getStoredCountryInfo();
-    const { cityInfo, error2 } = getStoredCityInfo();
-    console.log('cityInfocityInfo', cityInfo.cityCode)
 
-    // useStates to use the varibles inside the return
-    const [customer, setCustomer] = useState([]);
+function Customer() {
+
     const [customerInfo, setCustomerInfo] = useState([]);
     const [errors, setError] = useState(null);
 
-    // useEffect to store the data in the localstorage
     useEffect(() => {
-
         const { customerInfo, error } = getStoredCustomerInfo();
-        console.log('customerInfo:', customerInfo);
         setCustomerInfo(customerInfo);
-        // setError(error);
+
         const storedCustomerInfo = JSON.parse(localStorage.getItem('customerInfo'));
         const storedError = localStorage.getItem('error');
 
@@ -49,16 +41,24 @@ function Customer() {
         }
     }, []);
 
-
-    //..................
-
     const handleCustomerSubmit = async (values) => {
         try {
+
+            const { countryInfo } = getStoredCountryInfo();
+            const { cityInfo } = getStoredCityInfo();
+
+            const country = countryInfo.countryCode;
+            const city = cityInfo.cityCode;
+            console.log('country', country, 'city', city);
+
+            values.CountryCode = country;
+            values.cityCode = city;
+
             const existingCustomerIndex = customerInfo.findIndex((customer) => customer.CustomerCode === values.CustomerCode);
-            console.log('existingCustomerIndex', existingCustomerIndex)
+            // console.log('existingCustomerIndex', existingCustomerIndex)
             if (existingCustomerIndex !== -1) {
                 const response = await fetch(
-                    `https://localhost:7020/api/customers/${values.customerCode}`,
+                    `https://localhost:7173/api/customers/${values.customerCode}`,
                     {
                         method: 'PUT',
                         headers: {
@@ -79,12 +79,14 @@ function Customer() {
                 setCustomerInfo(updatedCustomerInfo);
                 setError(null);
 
-                // Update local storage here
+                // Update local storage
                 localStorage.setItem('customerInfo', JSON.stringify([...customerInfo, updatedCustomerInfo]));
                 localStorage.removeItem('error');
+                window.location.reload();
+
             } else {
                 // If the customer code doesn't exist, add a new entry
-                const response = await fetch('https://localhost:7020/api/customers', {
+                const response = await fetch('https://localhost:7173/api/customers', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -106,6 +108,8 @@ function Customer() {
                 // Update local storage
                 localStorage.setItem('customerInfo', JSON.stringify([...customerInfo, newCustomer]));
                 localStorage.removeItem('error');
+                window.location.reload();
+
             }
 
         } catch (error) {
@@ -114,37 +118,32 @@ function Customer() {
         }
     };
 
-
     const schema = yup.object().shape({
         CountryCode: yup.number(),
         cityCode: yup.number(),
-        customerCode: yup.string(),
+        customerCode: yup.string().required(),
         englishName: yup.string().required(),
         arabicName: yup.string(),
         mobileNo: yup.string(),
-        email: yup.string().required(),
+        email: yup.string(),
         addressLine1: yup.string(),
         addressLine2: yup.string(),
         addressLine3: yup.string(),
     });
 
-    const handleDeleteCountry = (index) => {
-        const updatedCustomerInfo = [...customerInfo];
-        updatedCustomerInfo.splice(index, 1);
+    const handleDeleteCustomer = (customerCode) => {
+        const updatedCustomerInfo = customerInfo.filter((customer) => customer.customerCode !== customerCode);
         setCustomerInfo(updatedCustomerInfo);
         localStorage.setItem('customerInfo', JSON.stringify(updatedCustomerInfo));
     };
 
     return (
-
         <div className='Countriesdiv'>
             <p className='title'>Customer </p>
             <Formik
                 validationSchema={schema}
                 onSubmit={handleCustomerSubmit}
                 initialValues={{
-                    CountryCode: countryInfo.countryCode,
-                    cityCode: cityInfo.length > 0 ? cityInfo[0].cityCode : '',
                     customerCode: '',
                     englishName: '',
                     arabicName: '',
@@ -160,41 +159,8 @@ function Customer() {
                         <div className='countrydiv'>
                             <Row className="mb-3">
 
-                                {/* Country */}
-                                <Form.Group as={Col} md="4" controlId="validationFormik01">
-                                    <Form.Label>Country Code</Form.Label>
-                                    <InputGroup hasValidation>
-                                        <Form.Control
-                                            type="text"
-                                            name="CountryCode"
-                                            value={values.CountryCode}
-                                            onChange={handleChange}
-                                            isValid={touched.CountryCode && !errors.CountryCode}
-                                            placeholder={countryInfo && countryInfo.CountryCode}
-                                            disabled
-                                        />
-                                        <Form.Control.Feedback type="invalid">{errors.country}</Form.Control.Feedback>
-                                    </InputGroup>
-                                </Form.Group>
-
-                                {/* city */}
-                                <Form.Group as={Col} md="4" controlId="validationFormik01">
-                                    <Form.Label>City Code</Form.Label>
-                                    <Form.Control 
-                                        type="text"
-                                        name="cityCode"
-                                        value={values.cityCode}
-                                        onChange={handleChange}
-                                        isValid={touched.cityCode && !errors.cityCode}
-                                        placeholder={cityInfo && cityInfo.CityCode}
-                                        disabled 
-                                    />
-                                    <Form.Control.Feedback type="invalid">{errors.city}</Form.Control.Feedback>
-                                </Form.Group>
-
-                                {/* customerCode */}
                                 <Form.Group as={Col} md="4" controlId="validationFormik02">
-                                    <Form.Label>Customer Code</Form.Label>
+                                    <Form.Label>Customer Code *</Form.Label>
                                     <Form.Control type="text"
                                         name="customerCode"
                                         value={values.customerCode}
@@ -203,9 +169,8 @@ function Customer() {
                                     <Form.Control.Feedback type="invalid">{errors.customerCode}</Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* englishName */}
                                 <Form.Group as={Col} md="4" controlId="validationFormikUsername">
-                                    <Form.Label>English Name</Form.Label>
+                                    <Form.Label>English Name *</Form.Label>
                                     <Form.Control type="text"
                                         name="englishName"
                                         value={values.englishName}
@@ -214,7 +179,6 @@ function Customer() {
                                     <Form.Control.Feedback type="invalid">{errors.englishName}</Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* arabicName */}
                                 <Form.Group as={Col} md="4" controlId="validationFormik01">
                                     <Form.Label>Arabic Name</Form.Label>
                                     <Form.Control type="text"
@@ -225,7 +189,6 @@ function Customer() {
                                     <Form.Control.Feedback type="invalid">{errors.arabicName}</Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* mobileNo */}
                                 <Form.Group as={Col} md="4" controlId="validationFormik01">
                                     <Form.Label>Mobile No.</Form.Label>
                                     <InputGroup hasValidation>
@@ -235,13 +198,11 @@ function Customer() {
                                             value={values.mobileNo}
                                             onChange={handleChange}
                                             isValid={touched.mobileNo && !errors.mobileNo}
-                                        // placeholder={mobileNo}
                                         />
                                         <Form.Control.Feedback type="invalid">{errors.mobileNo}</Form.Control.Feedback>
                                     </InputGroup>
                                 </Form.Group>
 
-                                {/* email */}
                                 <Form.Group as={Col} md="4" controlId="validationFormik02">
                                     <Form.Label>Email</Form.Label>
                                     <Form.Control type="text"
@@ -252,7 +213,6 @@ function Customer() {
                                     <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* addressLine1 */}
                                 <Form.Group as={Col} md="4" controlId="validationFormikUsername">
                                     <Form.Label>Address Line 1</Form.Label>
                                     <Form.Control type="text"
@@ -263,7 +223,6 @@ function Customer() {
                                     <Form.Control.Feedback type="invalid">{errors.addressLine1}</Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* addressLine2 */}
                                 <Form.Group as={Col} md="4" controlId="validationFormik01">
                                     <Form.Label>Address Line 2</Form.Label>
                                     <Form.Control type="text"
@@ -274,7 +233,6 @@ function Customer() {
                                     <Form.Control.Feedback type="invalid">{errors.addressLine2}</Form.Control.Feedback>
                                 </Form.Group>
 
-                                {/* addressLine3 */}
                                 <Form.Group as={Col} md="4" controlId="validationFormik01">
                                     <Form.Label>Address Line 3</Form.Label>
                                     <InputGroup hasValidation>
@@ -284,15 +242,13 @@ function Customer() {
                                             value={values.addressLine3}
                                             onChange={handleChange}
                                             isValid={touched.addressLine3 && !errors.addressLine3}
-                                        // placeholder={addressLine3}
-
                                         />
                                         <Form.Control.Feedback type="invalid">{errors.addressLine3}</Form.Control.Feedback>
                                     </InputGroup>
                                 </Form.Group>
                             </Row>
 
-                            <Button type="button" onClick={() => handleCustomerSubmit(values)}>Submit</Button>
+                            <Button type="submit">Submit</Button>
                         </div>
                     </Form>
                 )}
@@ -300,7 +256,6 @@ function Customer() {
 
             <div className="mt-3">
                 {customerInfo && Array.isArray(customerInfo) && (
-
                     <div>
                         <h5>Customer Information</h5>
 
@@ -315,6 +270,7 @@ function Customer() {
                                     <th>Address Line 1</th>
                                     <th>Address Line 2</th>
                                     <th>Address Line 3</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -329,7 +285,11 @@ function Customer() {
                                         <td>{customer.addressLine2}</td>
                                         <td>{customer.addressLine3}</td>
                                         <td>
-                                            <Button variant="danger" onClick={() => handleDeleteCountry(index)}>Delete</Button>
+                                            <FontAwesomeIcon
+                                                icon={faTrash}
+                                                className="delete-icon"
+                                                onClick={() => handleDeleteCustomer(customer.customerCode)}
+                                            />
                                         </td>
                                     </tr>
                                 ))}

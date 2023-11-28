@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import './Countries.css';
-import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import Table from 'react-bootstrap/Table';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 
@@ -37,7 +35,7 @@ function Countries() {
 
   const fetchCountriesForDropdown = async () => {
     try {
-      const response = await fetch('https://localhost:7020/api/countries/names');
+      const response = await fetch('https://localhost:7173/api/countries/names');
       if (!response.ok) {
         throw new Error(`Failed to fetch country names`);
       }
@@ -52,7 +50,7 @@ function Countries() {
 
   const handleFieldChange = async (values, { resetForm }) => {
     try {
-      const response = await fetch(`https://localhost:7020/api/countries/name/${values.SelectedCountry}`);
+      const response = await fetch(`https://localhost:7173/api/countries/name/${values.SelectedCountry}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch country information: ${response.statusText}`);
       }
@@ -65,7 +63,7 @@ function Countries() {
 
       // Save to local storage
       localStorage.setItem('countryInfo', JSON.stringify(countryInfo));
-
+      window.location.reload();
       // Reset the form after successful submission
       resetForm();
     } catch (error) {
@@ -74,22 +72,10 @@ function Countries() {
     }
   };
 
-  const handleDeleteRow = () => {
-    // Clear local storage
-    localStorage.removeItem('countryInfo');
-
-    // Clear state
-    setCountryInfo(null);
-
-    // Reload the page
-    window.location.reload();
-  };
-
   return (
     <div className='CountriesContainer'>
       <div className='CountriesForm'>
         <div className='form'>
-          <p className='title'>Countries Form</p>
           <Formik
             initialValues={{
               SelectedCountry: '',
@@ -109,7 +95,7 @@ function Countries() {
                         onChange={(e) => {
                           handleChange(e);
                           // Call the function to handle form submission on field change
-                          handleFieldChange({ SelectedCountry: e.target.value }, { resetForm: () => {} });
+                          handleFieldChange({ SelectedCountry: e.target.value }, { resetForm: () => { } });
                         }}
                         value={values.SelectedCountry}
                       >
@@ -127,39 +113,18 @@ function Countries() {
                       )}
                     </Col>
                   </Row>
-                  {/* <Button type='submit'>Submit</Button> */}
                 </div>
               </Form>
             )}
           </Formik>
         </div>
-        <div className='CountriesTable'>
-          <h5>Country Information</h5>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Country Code</th>
-                <th>Country English Name</th>
-                <th>Country Arabic Name</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {countryInfo && (
-                <tr>
-                  <td>{countryInfo?.countryCode || ''}</td>
-                  <td>{countryInfo?.countryEnglishName || ''}</td>
-                  <td>{countryInfo?.countryArabicName || ''}</td>
-                  <td>
-                    <Button variant='danger' onClick={handleDeleteRow}>
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </div>
+        <p>
+          {countryInfo && (
+            <div>
+              <p>{countryInfo.countryEnglishName}</p>
+            </div>
+          )}
+        </p>
         <hr />
       </div>
     </div>

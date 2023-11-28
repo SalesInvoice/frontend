@@ -1,0 +1,37 @@
+button.c.btn.btn-primary {
+    height: 60px;
+}
+
+button.upd.btn.btn-primary {
+    background: white;
+    color: black;
+    /* background-color: aquamarine; */
+}
+
+button.updr.btn.btn-primary {
+    background: white;
+    color: rgb(255, 0, 0);
+    /* background-color: aquamarine; */
+}
+
+.mb-3.rowe {
+    display: flex;
+    flex-direction: column;
+}
+
+
+p.fs-3.text-center.g {
+    /* width: 50%; */
+    /* width: auto; */
+    width: 500px;
+    padding-right: 50px;
+}
+
+.control {
+    display: flex;
+    justify-content: space-between;
+}
+
+.f {
+    width: 2000px;
+}
